@@ -1,31 +1,56 @@
 #include "Deque.h"
-
+#include <stdexcept>
 ///------------------------------------------------------
 /// Default constructor
 /// 
 Deque::Deque() {
-	// Fill this in
+	 // Initialize an empty deque
+    head = tail = NULL;
+    noOfItems = 0;
 } //end-Deque
 
 ///------------------------------------------------------
 /// Destructor
 /// 
 Deque::~Deque() {
-	// Fill this in
+	 // Delete all nodes in the deque
+    while (head != NULL) {
+        DequeNode* temp = head;
+        head = head->next;
+        delete temp;
+    }
+    tail = NULL;
+    noOfItems = 0;
 } //end-~Deque
 
 ///------------------------------------------------------
 /// Adds a new item to the front of the Deque
 /// 
 void Deque::AddFront(int item) {
-	// Fill this in
+	  DequeNode* newNode = new DequeNode(item);
+    if (head == NULL) {
+        head = tail = newNode;
+    } else {
+        newNode->next = head;
+        head->prev = newNode;
+        head = newNode;
+    }
+    noOfItems++;
 } //end-AddFront
 
 ///------------------------------------------------------
 /// Adds a new item to the end of the Deque
 /// 
 void Deque::AddRear(int item) {
-	// Fill this in
+	 DequeNode* newNode = new DequeNode(item);
+    if (tail == NULL) {
+        head = tail = newNode;
+    } else {
+        newNode->prev = tail;
+        tail->next = newNode;
+        tail = newNode;
+    }
+    noOfItems++;
 } //end-AddRear
 
 ///------------------------------------------------------
@@ -33,8 +58,23 @@ void Deque::AddRear(int item) {
 /// If the Deque is empty, throw an exception
 /// 
 int Deque::RemoveFront() {
-	// Fill this in
-	return 0;
+	if (IsEmpty()) {
+        throw std::out_of_range("Deque is empty");
+    }
+
+    int frontItem = head->item;
+    DequeNode* temp = head;
+
+    if (head == tail) {
+        head = tail = NULL;
+    } else {
+        head = head->next;
+        head->prev = NULL;
+    }
+
+    delete temp;
+    noOfItems--;
+    return frontItem;
 } //end-RemoveFront
 
 ///------------------------------------------------------
@@ -42,8 +82,23 @@ int Deque::RemoveFront() {
 /// If the Deque is empty, throw an exception
 /// 
 int Deque::RemoveRear() {
-	// Fill this in
-	return 0;
+	 if (IsEmpty()) {
+        throw std::out_of_range("Deque is empty");
+    }
+
+    int rearItem = tail->item;
+    DequeNode* temp = tail;
+
+    if (head == tail) {
+        head = tail = NULL;
+    } else {
+        tail = tail->prev;
+        tail->next = NULL;
+    }
+
+    delete temp;
+    noOfItems--;
+    return rearItem;
 } //end-RemoveRear
 
 ///------------------------------------------------------
@@ -51,8 +106,11 @@ int Deque::RemoveRear() {
 /// If the Deque is empty, throw an exception
 /// 
 int Deque::Front() {
-	// Fill this in
-	return 0;
+	if (IsEmpty()) {
+        throw std::out_of_range("Deque is empty");
+    }
+
+    return head->item;
 } //end-Front
 
 ///------------------------------------------------------
@@ -60,6 +118,9 @@ int Deque::Front() {
 /// If the Deque is empty, throw an exception
 /// 
 int Deque::Rear() {
-	// Fill this in
-	return 0;
+	 if (IsEmpty()) {
+        throw std::out_of_range("Deque is empty");
+    }
+
+    return tail->item;
 } //end-Rear

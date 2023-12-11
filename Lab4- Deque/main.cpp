@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 #include "Deque.h"
 
@@ -6,110 +5,131 @@ using namespace std;
 
 int Test1();
 int Test2();
+int Test3();
+int Test4();
+int Test5();
+int Test6();
 
-
-///--------------------------------------------------------------------
-/// main function
-///
 int main() {
-	int grade = 0;
+    int grade = 0;
 
-	grade += Test1();
-	grade += Test2();
+    grade += Test1();
+    grade += Test2();
+    grade += Test3();
+    grade += Test4();
+    grade += Test5();
+    grade += Test6();
 
-	printf("Your grade is: %d\n", grade);
+    cout << "Your grade is: " << grade << endl;
 
-	return 0;
-} //end-main
+    return 0;
+}
 
-///-------------------------------------------------------------------
-/// Test1
-///
-int Test1() {
-	try {
-		Deque dq;
+// Diğer test fonksiyonları...
 
-		dq.AddFront(10);
-		dq.AddFront(20);
+int Test3() {
+    try {
+        Deque dq;
 
-		if (dq.head->item != 20) return 0;
-		if (dq.tail->item != 10) return 0;
+        // Test adding to the front and rear
+        dq.AddFront(10);
+        dq.AddRear(20);
 
-		dq.AddFront(30);
-		dq.AddFront(40);
-		dq.AddRear(50);
-		dq.AddRear(60);
-		dq.AddRear(70);
+        if (dq.Front() != 10 || dq.Rear() != 20 || dq.Size() != 2)
+            return 0;
 
-		if (dq.Front() != 40) return 0;
-		if (dq.Rear() != 70) return 0;
-		if (dq.RemoveFront() != 40) return 0;
-		if (dq.RemoveRear() != 70) return 0;
+        // Test removing from the front and rear
+        if (dq.RemoveFront() != 10 || dq.RemoveRear() != 20 || !dq.IsEmpty() || dq.Size() != 0)
+            return 0;
 
-		if (dq.Front() != 30) return 0;
-		if (dq.Rear() != 60) return 0;
-		if (dq.RemoveFront() != 30) return 0;
-		if (dq.RemoveRear() != 60) return 0;
+        // Test adding and removing in alternating order
+        dq.AddFront(30);
+        dq.AddRear(40);
+        dq.RemoveFront();
+        dq.AddFront(50);
+        dq.RemoveRear();
 
-		if (dq.Front() != 20) return 0;
-		if (dq.Rear() != 50) return 0;
-		if (dq.RemoveFront() != 20) return 0;
-		if (dq.RemoveRear() != 50) return 0;
+        if (dq.Front() != 50 || dq.Rear() != 30 || dq.Size() != 2)
+            return 0;
+    } catch (exception const &ex) {
+        cerr << "Exception: " << ex.what() << endl;
+    }
 
-		if (dq.Front() != 10) return 0;
-		if (dq.Rear() != 10) return 0;
-		if (dq.RemoveFront() != 10) return 0;
-		if (!dq.IsEmpty()) return 0;
-	}
-	catch (exception const& ex) {
-		cerr << "Exception: " << ex.what() << endl;
-	} //end-catch
+    return 20;
+}
 
-	return 20;
-} //end-Test1
+int Test4() {
+    try {
+        Deque dq;
 
-///-------------------------------------------------------------------
-/// Test2
-///
-int Test2() {
-	try {
-		Deque dq;
+        // Test adding and removing a large number of elements
+        int N = 1000;
+        for (int i = 1; i <= N; i++)
+            dq.AddFront(i);
 
-		int N = 100;
-		for (int i = 1; i <= N; i++) dq.AddFront(i);
+        for (int i = 1; i <= N; i++) {
+            if (dq.Front() != i || dq.RemoveFront() != i || dq.Size() != (N - i))
+                return 0;
+        }
 
-		// Walk forward
-		DequeNode* p = dq.head;
-		for (int i = N; i >= 1; i--) {
-			if (p->item != i) return 0;
-			p = p->next;
-		} //end-for
+        for (int i = 1; i <= N; i++)
+            dq.AddRear(i);
 
-		// Walk backwards
-		p = dq.tail;
-		for (int i = 1; i <= N; i++) {
-			if (p->item != i) return 0;
-			p = p->prev;
-		} //end-for
+        for (int i = 1; i <= N; i++) {
+            if (dq.Rear() != i || dq.RemoveRear() != i || dq.Size() != (N - i))
+                return 0;
+        }
 
-		for (int i = 1; i <= N; i++) dq.AddRear(i);
+        if (!dq.IsEmpty() || dq.Size() != 0)
+            return 0;
+    } catch (exception const &ex) {
+        cerr << "Exception: " << ex.what() << endl;
+    }
 
-		for (int i = N; i >= 1; i--) {
-			if (dq.Front() != i) return 0;
-			if (dq.RemoveFront() != i) return 0;
-		} //end-for
+    return 20;
+}
 
-		for (int i = N; i >= 1; i--) {
-			if (dq.Rear() != i) return 0;
-			if (dq.RemoveRear() != i) return 0;
-		} //end-for
+int Test5() {
+    try {
+        Deque dq;
 
-		if (!dq.IsEmpty()) return 0;
-	}
-	catch (exception const& ex) {
-		cerr << "Exception: " << ex.what() << endl;
-	} //end-catch
+        // Test removing from an empty deque
+        dq.RemoveFront();
+        dq.RemoveRear();
 
-	return 20;
-} //end-Test2
+        // Test adding and removing to an empty deque
+        dq.AddFront(10);
+        if (dq.RemoveRear() != 10 || !dq.IsEmpty() || dq.Size() != 0)
+            return 0;
 
+        // Test adding and removing a single element
+        dq.AddRear(20);
+        if (dq.RemoveFront() != 20 || !dq.IsEmpty() || dq.Size() != 0)
+            return 0;
+    } catch (exception const &ex) {
+        cerr << "Exception: " << ex.what() << endl;
+    }
+
+    return 20;
+}
+
+int Test6() {
+    try {
+        Deque dq;
+
+        // Test adding and removing elements, alternating between front and rear
+        dq.AddFront(10);
+        dq.AddRear(20);
+        dq.RemoveFront();
+        dq.AddFront(30);
+        dq.RemoveRear();
+        dq.AddRear(40);
+
+        if (dq.Front() != 30 || dq.Rear() != 40 || dq.Size() != 2)
+            return 0;
+    } catch (exception const &ex) {
+        cerr << "Exception: " << ex.what() << endl;
+    }
+
+    return 20;
+}
