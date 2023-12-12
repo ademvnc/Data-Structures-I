@@ -82,7 +82,7 @@ int Deque::RemoveFront() {
 /// If the Deque is empty, throw an exception
 /// 
 int Deque::RemoveRear() {
-	 if (IsEmpty()) {
+    if (IsEmpty()) {
         throw std::out_of_range("Deque is empty");
     }
 
@@ -93,13 +93,18 @@ int Deque::RemoveRear() {
         head = tail = NULL;
     } else {
         tail = tail->prev;
-        tail->next = NULL;
+        if (tail != NULL) {
+            tail->next = NULL;
+        }
     }
 
     delete temp;
     noOfItems--;
     return rearItem;
-} //end-RemoveRear
+}
+
+
+ //end-RemoveRear
 
 ///------------------------------------------------------
 /// Return the item at the front of the Deque (do not remove the item)
