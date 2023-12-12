@@ -5,6 +5,7 @@
             "label": "C/C++: Code.exe build active file",
             "command": "c:\\Users\\ademm\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
             "args": [
+
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
