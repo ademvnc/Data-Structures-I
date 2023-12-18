@@ -10,8 +10,9 @@ int Test2();
 int main() {
 	int grade = Test1();
 	grade += Test2();
+	
 
-	printf("Your grade is: %d\n", grade);
+	cout << "Your Grade is " << grade << endl;
 
 	return 0;
 } //end-main
@@ -77,6 +78,8 @@ int Test1() {
 	} // end-for
 	if (p != NULL) return 0;
 
+
+	cout << "Test 1 passed" << endl;
 	// OK. Passed all tests
 	return 20;
 } //end-Test1
@@ -139,5 +142,6 @@ int Test2() {
 	if (p != NULL) return 0;
 
 	// OK. Passed all tests
+	
 	return 20;
 } //end-Test2

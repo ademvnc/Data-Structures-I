@@ -18,25 +18,153 @@ void ThreadedBST::eraseTreeNodes(BSTNode* node) {
 /// Adds a given key to the BST
 /// 
 void ThreadedBST::add(int key) {
-	// Fill this in
-} // end-add
+    if (root == NULL) {
+        root = new BSTNode(key);
+        return;
+    }
+
+    BSTNode* curr = root;
+    BSTNode* parent = NULL;
+
+    while (curr != NULL) {
+        parent = curr;
+
+        if (key < curr->key) {
+            if (curr->leftLinkType == THREAD)
+                break;
+            curr = curr->left;
+        } else if (key > curr->key) {
+            if (curr->rightLinkType == THREAD)
+                break;
+            curr = curr->right;
+        } else {
+            // Anahtar zaten mevcut, bir şey yapma
+            return;
+        }
+    }
+
+    BSTNode* newNode = new BSTNode(key);
+
+    if (key < parent->key) {
+        newNode->left = parent->left;
+        newNode->right = parent;
+        parent->left = newNode;
+        parent->leftLinkType = CHILD;
+    } else {
+        newNode->left = parent;
+        newNode->right = parent->right;
+        parent->right = newNode;
+        parent->rightLinkType = CHILD;
+    }
+
+    // Yeni düğümün bağ tipini ayarla
+    newNode->leftLinkType = THREAD;
+    newNode->rightLinkType = THREAD;
+}
 
 ///-----------------------------------------------
 /// Removes a given key from the BST (if it exists)
 /// 
 void ThreadedBST::remove(int key) {
-	// Fill this in
-} // end-remove
+    BSTNode* curr = root;
+    BSTNode* parent = NULL;
+
+    // Find the node to be removed
+    while (curr != NULL && curr->key != key) {
+        parent = curr;
+        if (key < curr->key) {
+            if (curr->leftLinkType == THREAD)
+                return; // Key not found
+            curr = curr->left;
+        } else {
+            if (curr->rightLinkType == THREAD)
+                return; // Key not found
+            curr = curr->right;
+        }
+    }
+
+    if (curr == NULL)
+        return; // Key not found
+
+    // Case 1: Node to be removed is a leaf
+    if (curr->left == NULL && curr->right == NULL) {
+        if (parent == NULL) {
+            delete root;
+            root = NULL;
+            return;
+        }
+
+        if (curr == parent->left) {
+            parent->left = curr->left;
+            parent->leftLinkType = THREAD;
+        } else {
+            parent->right = curr->right;
+            parent->rightLinkType = THREAD;
+        }
+
+        delete curr;
+    }
+    // Case 2: Node to be removed has two children
+    else if (curr->left != NULL && curr->right != NULL) {
+        // BSTNode* successor = min();
+        BSTNode* successor = curr->right;
+        while (successor->leftLinkType != THREAD) {
+            successor = successor->left;
+        }
+
+        // Swap key values
+        int temp = curr->key;
+        curr->key = successor->key;
+        successor->key = temp;
+
+        // Continue with the removal process
+        remove(successor->key);
+    }
+    // Case 3: Node to be removed has one child
+    else {
+        BSTNode* child = (curr->left != NULL) ? curr->left : curr->right;
+
+        if (parent == NULL) {
+            delete root;
+            root = child;
+            return;
+        }
+
+        if (curr == parent->left) {
+            parent->left = child;
+        } else {
+            parent->right = child;
+        }
+
+        delete curr;
+    }
+}
+
 
 ///-----------------------------------------------
 /// Searches a given key in the ThreadedBST
 /// Return a pointer to the node that holds the key
 /// If the key is not found, return NULL
 /// 
-BSTNode *ThreadedBST::find(int key) {
-	// Fill this in
-	return NULL;
-} // end-find
+BSTNode* ThreadedBST::find(int key) {
+    BSTNode* curr = root;
+
+    while (curr != NULL) {
+        if (key == curr->key)
+            return curr;
+        else if (key < curr->key) {
+            if (curr->leftLinkType == THREAD)
+                return NULL;
+            curr = curr->left;
+        } else {
+            if (curr->rightLinkType == THREAD)
+                return NULL;
+            curr = curr->right;
+        }
+    }
+
+    return NULL;
+}
 
 ///-----------------------------------------------
 /// Returns the minimum key in the ThreadedBST
@@ -44,9 +172,14 @@ BSTNode *ThreadedBST::find(int key) {
 /// If the key is not found, return NULL
 /// 
 BSTNode* ThreadedBST::min() {
-	// Fill this in
-	return NULL;
-} // end-min
+    BSTNode* curr = root;
+
+    while (curr != NULL && curr->leftLinkType != THREAD) {
+        curr = curr->left;
+    }
+
+    return curr;
+}
 
 ///-----------------------------------------------
 /// Returns the maximum key in the ThreadedBST
@@ -54,9 +187,14 @@ BSTNode* ThreadedBST::min() {
 /// If the key is not found, return NULL
 /// 
 BSTNode* ThreadedBST::max() {
-	// Fill this in
-	return NULL;
-} // end-max
+    BSTNode* curr = root;
+
+    while (curr != NULL && curr->rightLinkType != THREAD) {
+        curr = curr->right;
+    }
+
+    return curr;
+}
 
 ///-----------------------------------------------
 /// Given a valid pointer to a node in ThreadedBST,
@@ -64,9 +202,17 @@ BSTNode* ThreadedBST::max() {
 /// If the inorder predecessor does not exist, returns NULL
 /// 
 BSTNode* ThreadedBST::previous(BSTNode* node) {
-	// Fill this in
-	return NULL;
-} // end-previous
+    if (node->leftLinkType == THREAD)
+        return node->left;
+
+    
+    BSTNode* predecessor = node->left;
+    while (predecessor->rightLinkType != THREAD) {
+        predecessor = predecessor->right;
+    }
+
+    return predecessor;
+}
 
 ///-----------------------------------------------
 /// Given a valid pointer to a node in the ThreadedBST,
@@ -74,6 +220,14 @@ BSTNode* ThreadedBST::previous(BSTNode* node) {
 /// If the inorder successor does not exist, returns NULL
 /// 
 BSTNode* ThreadedBST::next(BSTNode* node) {
-	// Fill this in
-	return NULL;
-} // end-next
+    if (node->rightLinkType == THREAD)
+        return node->right;
+
+    
+    BSTNode* successor = node->right;
+    while (successor->leftLinkType != THREAD) {
+        successor = successor->left;
+    }
+
+    return successor;
+}
