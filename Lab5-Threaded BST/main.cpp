@@ -10,6 +10,7 @@ int Test3();
 int Test4();
 int Test5();
 int Test6();
+int Test7();
 
 int main() {
 	int grade = Test1();
@@ -275,3 +276,17 @@ int Test6() {
 }
 
 
+// test-7 için yardımcı fonksiyon
+
+int Test7() {
+	ThreadedBST bst;
+
+	cout << "Test 7 entered" << endl;
+
+	bst.add(10);
+	bst.add(5);
+	bst.add(15);
+	bst.add(2);
+	bst.add(7);
+	bst.add(12);
+	
